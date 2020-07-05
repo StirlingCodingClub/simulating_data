@@ -3,10 +3,10 @@ title: "Creating simulated data sets in R"
 author: "Brad Duthie"
 date: "8 July 2020"
 output:
+  word_document: default
   html_document:
     code_folding: show
   pdf_document: default
-  word_document: default
 bibliography: refs.bib
 ---
 
@@ -340,10 +340,102 @@ We could even run an ordination on these simulated data. For example, we could e
 <a name="fullsim">Simulating a full data set</a>
 ================================================================================
 
+Putting everything together, here I will create a data set of three different species from which three different measurements are taken. We can just call these measurements 'length', 'width', and 'mass'. For simplicity, let us assume that these measurements always covary in the same way that we saw with $\textbf{V}$ (i.e., `cv_mat`) above. But let's also assume that we have three species with slightly different mean values. Below is the code that will build a new data set of $N = 20$ samples with four columns: species, length, width, and mass. 
+
+```{r}
+N           <- 20;
+matrix_data <- c(12.68, 13.95, 3.07, 13.95, 30.39, 4.70, 3.07, 4.70, 2.18);
+cv_mat      <- matrix(data = matrix_data, nrow = 3, ncol = 3, byrow = TRUE);
+mns_1       <- c(159.54, 245.26, 25.52);
+sim_data_1  <- mvrnorm(n = N, mu = mns, Sigma = cv_mat);
+colnames(sim_data_1) <- c("Length", "Width", "Mass");
+# Below, I bind a column for indicating 'species_1' identity
+species     <- rep(x = "species_1", times = 20); # Repeats 20 times
+sp_1        <- data.frame(species, sim_data_1);
+```
+
+Let us add one more data column. Suppose that we can also sample the number of offspring each organism has, and that the mean number of offspring that an organism has equals one tenth of the organism's mass. To do this, we can use `rpois`, and take advantage of the fact that the argument `lambda` can be a vector rather than a single value. So to get the number of offspring for each organism based on its body mass, we can just insert the mass vector `sp_1$Mass` times 0.1 for `lambda`.
+
+```{r}
+offspring   <- rpois(n = N, lambda = sp_1$Mass * 0.1);
+sp_1        <- cbind(sp_1, offspring);
+```
+
+I have also bound the offspring number to the data set `sp_1`. Here is what it looks like below.
+
+```{r, echo = FALSE}
+kable(sp_1);
+```
+
+To add two more species, let us repeat the process two more times, but change the expected mass just slightly each time. The code below does this, and puts everything together in a single data set.
+
+```{r}
+# First making species 2
+mns_2       <- c(159.54, 245.26, 25.52 + 3); # Add a bit
+sim_data_2  <- mvrnorm(n = N, mu = mns, Sigma = cv_mat);
+colnames(sim_data_2) <- c("Length", "Width", "Mass");
+species     <- rep(x = "species_2", times = 20); # Repeats 20 times
+offspring   <- rpois(n = N, lambda = sim_data_2[,3] * 0.1);
+sp_2        <- data.frame(species, sim_data_2, offspring);
+# Now make species 3
+mns_3       <- c(159.54, 245.26, 25.52 + 4.5); # Add a bit more
+sim_data_3  <- mvrnorm(n = N, mu = mns, Sigma = cv_mat);
+colnames(sim_data_3) <- c("Length", "Width", "Mass");
+species     <- rep(x = "species_3", times = 20); # Repeats 20 times
+offspring   <- rpois(n = N, lambda = sim_data_3[,3] * 0.1);
+sp_3        <- data.frame(species, sim_data_3, offspring);
+# Bring it all together in one data set
+dat <- rbind(sp_1, sp_2, sp_3);
+```
+
+Our full data set now looks like the below.
+
+```{r, echo = FALSE}
+kable(dat);
+```
+
+To summarise, we now have a simulated data set of measurements from three different species, all of which have known variances and covariances of length, width, and mass. Each species has a slightly different mean mass, and for all species, each unit of mass increases the expected number of offspring by 0.1. Because we know these properties of the data for certain, we can start asking questions that might be useful to know about our data analysis. For example, given this covariance structure and these small differences in mass, is a sample size of 20 really enough to even get a significant difference among species masses using an ANOVA? What if we tried to test for differences among masses using some sort of [randomisation approach](https://stirlingcodingclub.github.io/randomisation/randomisation_notes.html#rand_h) Instead? Would this give us more or less power? Let us run an ANOVA to see if the difference between group means (which we know exists) is recovered.
+
+```{r}
+aov_result <- aov(Mass ~ species, data = dat);
+summary(aov_result);
+```
+
+It appears not! What about the relationship between body mass and offspring production that we know exists? Below is a scatterplot of the data for the three different species.
+
+```{r, echo = FALSE}
+par(mar = c(5, 5, 1, 1));
+s1 <- dat[dat[,1] == "species_1",];
+s2 <- dat[dat[,1] == "species_2",];
+s3 <- dat[dat[,1] == "species_3",];
+plot(x = s1$Mass, y = s1$offspring, pch = 15, cex = 1.25, cex.lab = 1.25,
+     cex.axis = 1.25, xlab = "Species mass", ylab = "Species offspring",
+     xlim = c(min(dat$Mass) - 1, max(dat$Mass) + 1),
+     ylim = c(0, max(dat$offspring)), col = "black");
+points(x = s2$Mass, y = s2$offspring, pch = 16, cex = 1.25, col = "red");
+points(x = s3$Mass, y = s3$offspring, pch = 17, cex = 1.25, col = "blue");
+legend("topleft", pch = 15:17, col = c("black", "red", "blue"), 
+       legend = c("Species 1", "Species 2", "Species 3"), cex = 1.25);
+```
+
+This looks like there might be a postive relationship. We can use a generalised linear model to test it with species as a random effect, as we might do if these were data sampled from the field.
+
+```{r}
+library(lme4);
+mod <- glmer(offspring ~ Mass + (1 | species), data = dat, family = "poisson");
+summary(mod);
+```
+
+There does not appear to be any effect here either! To get one, it appears that we will need to simulate a larger data set (or a bigger effect size -- or just get lucky when re-simulating a new data set). 
+
+Note that I have run a linear model that might be reasonable given the structure of our data. But the advantage of working with simulated data and knowing for certain what the relationship is between the underlying variables is that we can explore different statistical techniques. For example, we know that our response variable `offspring` is count data, so we are supposed to specify a Poisson error structure using the `family = "poisson"` argument above, right? But what would happen if we just used a normal error structure anyway? Would this really be so bad? Now is the opportunity to test because we *know* what the correct answer is supposed to be! Trying statistical methods that are normally ill-advised can actually be useful here, as it can help us see for ourselves when a technique is bad -- or perhaps when it really is not [e.g., @Ives2015].
 
 <a name="conclusions">Conclusions</a>
 ================================================================================
 
+Simulating data can be a powerful tool for learning and investigating different statistical analyses. The main benefits of using simulated data are flexibility and certainty. Simulation gives us the flexibility to explore any number of hypotheticals, including different sample sizes, effect sizes, relationships between variables, and error distributions. It also works from a point of certainty; we know what the real relationship is between variables, and what the actual effect sizes are because we define them when generating random samples. So if we want to better understand what would happen if we were unable to sample an important variable in our system, or if we were to use a biased estimator, or if we we were to violate key model assumptions, simulated data is a very useful tool.
+
 
 <a name="refs">Literature cited</a>
 ================================================================================
+
