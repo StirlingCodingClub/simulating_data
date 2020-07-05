@@ -252,6 +252,90 @@ library("MASS");
 
 In the [MASS](https://cran.r-project.org/web/packages/MASS/MASS.pdf) library, the function `mvrnorm` can be used to generate any number of variables for a pre-specified covariance structure.
 
+```{r, echo = FALSE}
+bumpus <- read.csv("Bumpus_data.csv");
+c_bump <- cov(bumpus[,3:5]);
+```
+
+Suppose we want to simulate a data set of three measurements from a species of organisms. Measurement 1 ($M_1$) has a mean of $\mu_{M_{1}} =$ `r round(mean(bumpus[,3]), digits = 2)` and variance of $Var(M_1) =$ `r round(c_bump[1, 1], digits = 2)`, measurement 2 ($M_2$) has a mean of $\mu_{M_{1}} =$ `r round(mean(bumpus[,4]), digits = 2)` and variance of $Var(M_2) =$ `r round(c_bump[2, 2], digits = 2)`, and measurement 3 ($M_2$) has a mean of $\mu_{M_{1}} =$ `r round(mean(bumpus[,5]), digits = 2)` and variance of $Var(M_3) =$ `r round(c_bump[3, 3], digits = 2)`. Below is a table summarising.
+
+```{r, echo = FALSE}
+library(knitr);
+mns <- round(apply(X = bumpus[,3:5], MARGIN = 2, FUN = mean), digits = 2);
+vrs <- round(apply(X = bumpus[,3:5], MARGIN = 2, FUN = var), digits = 2);
+nms <- c("M1", "M2", "M3");
+dfrm <- data.frame(measurement = nms, mean = mns, variance = vrs);
+rownames(dfrm) <- NULL;
+kable(dfrm);
+```
+
+
+Further, we want the covariance between $M_1$ and $M_2$ to equal $Cov(M_{1}, M_{2}) =$ `r round(c_bump[1, 2], digits = 2)`, the covariance between $M_1$ and $M_3$ to equal $Cov(M_{1}, M_{3}) =$ `r round(c_bump[1, 3], digits = 2)`, and the covariance between $M_2$ and $M_3$ to equal $Cov(M_{2}, M_{3}) =$ `r round(c_bump[2, 3], digits = 2)`. We can put all of this information into a [covariance matrix](https://en.wikipedia.org/wiki/Covariance_matrix) $\textbf{V}$ with three rows and three columns. The diagonal of the matrix holds the variances of each variable, with the off-diagonals holding the covariances (note also that the variance of a variable $M$ is just the variable's covariance with itself; e.g., $Var(M_{1}) = Cov(M_{1}, M_{1})$).
+
+$$
+V = \begin{pmatrix}
+  Var(M_{1}), & Cov(M_{1}, M_{2}), & Cov(M_{1}, M_{3}) \\
+  Cov(M_{2}, M_{1}), & Var(M_{2}), & Cov(M_{2}, M_{3}) \\
+  Cov(M_{3}, M_{1}), & Cov(M_{3}, M_{2}), & Var(M_{3}) \\
+\end{pmatrix}.
+$$
+
+In R, we can create this matrix as follows.
+
+```{r}
+matrix_data <- c(12.68, 13.95, 3.07, 13.95, 30.39, 4.70, 3.07, 4.70, 2.18);
+cv_mat      <- matrix(data = matrix_data, nrow = 3, ncol = 3, byrow = TRUE);
+rownames(cv_mat) <- c("M1", "M2", "M3");
+colnames(cv_mat) <- c("M1", "M2", "M3");
+```
+
+Here is what `cv_mat` looks like (note that it is symmetrical along the diagonal).
+
+```{r, echo = FALSE}
+print(cv_mat);
+```
+
+Now we can add the means to a vector in R.
+
+```{r}
+mns <- c(159.54, 245.26, 25.52);
+```
+
+We are now ready to use the `mvrnorm` function in R to simulate some number `n` of sampled organisms with these three measurements. We use the `mvrnorm` arguments `mu` and `Sigma` to specify the vector of means and covariance matrix, respectively.
+
+```{r}
+sim_data <- mvrnorm(n = 40, mu = mns, Sigma = cv_mat);
+```
+
+Here are the example data below.
+
+```{r, echo = FALSE}
+kable(sim_data);
+```
+
+We can check to confirm that the mean values of each column are correct using `apply`.
+
+```{r}
+apply(X = sim_data, MARGIN = 2, FUN = mean);
+```
+
+And we can check to confirm that the covariance structure of the data is correct using `cov`.
+
+```{r}
+cov(sim_data);
+```
+
+Note that the values are not exact, but should become closer to the specified values as increase the sample size `n`. We can visualse the data too; for example, we might look at the close correlation between $M_{1}$ and $M_{2}$ using a scatterplot, just as we would for data sampled from the field.
+
+```{r}
+par(mar = c(5, 5, 1, 1));
+plot(x = sim_data[,1], y = sim_data[,2], pch = 20, cex = 1.25, cex.lab = 1.25,
+     cex.axis = 1.25, xlab = expression(paste("Value of ", M[1])),
+     ylab = expression(paste("Value of ", M[2])));
+```
+
+We could even run an ordination on these simulated data. For example, we could extract the principle components with `prcomp`, then plot the first two PCs to visualise these data. We might, for example, want to compare different methods of ordination using a data set with different, pre-specified properties [e.g., @Minchin1987]. We might also want to use simulated data sets to investigate how different statistical tools perform. I show this in the next section, where I put a full data set together and run [linear models](https://stirlingcodingclub.github.io/linear_modelling/) on it.
+
 
 <a name="fullsim">Simulating a full data set</a>
 ================================================================================

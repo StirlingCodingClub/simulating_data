@@ -14,3 +14,6 @@ colnames(cor_mat) <- var_names;
 
 
 sim_dat   <- mvrnorm(n = N, mu = mean_vals, Sigma = cor_mat, empirical = TRUE);
+
+
+
