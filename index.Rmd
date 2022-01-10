@@ -3,9 +3,9 @@ title: "Creating simulated data sets in R"
 author: "Brad Duthie"
 date: "12 January 2022"
 output:
-  pdf_document: default
   html_document:
     code_folding: show
+  pdf_document: default
   word_document: default
 bibliography: refs.bib
 ---
@@ -15,7 +15,7 @@ Contents
 
 ********************************************************************************
 
-**The ability to simulate data is a useful tool for better understanding statistical analyses and planning experimental designs. These notes illustrate how to simulate data using a variety of different functions in the R programming language, then discuss how data simulation can be used in research. These notes borrow heavily from a Stirling Coding Club session on [randomisation](https://stirlingcodingclub.github.io/randomisation/randomisation_notes.html), and to a lesser extent from a session on [linear models](https://stirlingcodingclub.github.io/linear_modelling/). After working through these notes, the reader should be able to simulate their own data sets and use them to explore data visualisations and statistical analysis. These notes are also available as a  [HTML](https://stirlingcodingclub.github.io/linear_modelling/index.html).**
+**The ability to simulate data is a useful tool for better understanding statistical analyses and planning experimental designs. These notes illustrate how to simulate data using a variety of different functions in the R programming language, then discuss how data simulation can be used in research. These notes borrow heavily from a Stirling Coding Club session on [randomisation](https://stirlingcodingclub.github.io/randomisation/randomisation_notes.html), and to a lesser extent from a session on [linear models](https://stirlingcodingclub.github.io/linear_modelling/). After working through these notes, the reader should be able to simulate their own data sets and use them to explore data visualisations and statistical analysis. These notes are also available as a  [PDF](https://stirlingcodingclub.github.io/simulating_data/index.pdf).**
 
 ********************************************************************************
 
