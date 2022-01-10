@@ -1,12 +1,12 @@
 ---
 title: "Creating simulated data sets in R"
 author: "Brad Duthie"
-date: "8 July 2020"
+date: "12 January 2022"
 output:
-  word_document: default
+  pdf_document: default
   html_document:
     code_folding: show
-  pdf_document: default
+  word_document: default
 bibliography: refs.bib
 ---
 
@@ -15,7 +15,7 @@ Contents
 
 ********************************************************************************
 
-**The ability to simulate data is a useful tool for better understanding statistical analyses and planning experimental designs. These notes illustrate how to simulate data using a variety of different functions in the R programming language, then discuss how data simulation can be used in research. These notes borrow heavily from a Stirling Coding Club session on [randomisation](https://stirlingcodingclub.github.io/randomisation/randomisation_notes.html), and to a lesser extent from a session on [linear models](https://stirlingcodingclub.github.io/linear_modelling/). After working through these notes, the reader should be able to simulate their own data sets and use them to explore data visualisations and statistical analysis. These notes are also available as [PDF](https://stirlingcodingclub.github.io/linear_modelling/index.pdf) and [DOCX](https://stirlingcodingclub.github.io/linear_modelling/index.docx) documents.**
+**The ability to simulate data is a useful tool for better understanding statistical analyses and planning experimental designs. These notes illustrate how to simulate data using a variety of different functions in the R programming language, then discuss how data simulation can be used in research. These notes borrow heavily from a Stirling Coding Club session on [randomisation](https://stirlingcodingclub.github.io/randomisation/randomisation_notes.html), and to a lesser extent from a session on [linear models](https://stirlingcodingclub.github.io/linear_modelling/). After working through these notes, the reader should be able to simulate their own data sets and use them to explore data visualisations and statistical analysis. These notes are also available as a  [HTML](https://stirlingcodingclub.github.io/linear_modelling/index.html).**
 
 ********************************************************************************
 
@@ -50,13 +50,13 @@ Below, I introduce some base R functions that simulate (pseudo)random numbers fr
 
 <a name="runif">**Sampling from a uniform distribution**</a>
 
-Like the `rnorm` function, the `runif` function returns some number (`n`) of random numbers, but from a [uniform distribution](https://en.wikipedia.org/wiki/Uniform_distribution_(continuous)) with a range from $a$ (`min`) to $b$ (`max`) such that $X\sim\mathcal U(a,b)$, where $-\infty < a < b < \infty$. The default is to draw from a standard uniform distribution (i.e., $a = 0$ and $b = 1$).
+The `runif` function returns some number (`n`) of random numbers from a [uniform distribution](https://en.wikipedia.org/wiki/Uniform_distribution_(continuous)) with a range from $a$ (`min`) to $b$ (`max`) such that $X\sim\mathcal U(a,b)$ (verbally, $X$ is sampled from a uniform distribution with the parameters $a$ and $b$), where $-\infty < a < b < \infty$ (verbally, $a$ is greater than negative infinity but less than $b$, and $b$ is finite). The default is to draw from a standard uniform distribution (i.e., $a = 0$ and $b = 1$) as done below.
 
 ```{r}
 rand_unifs_10 <- runif(n = 10, min = 0, max = 1);
 ```
 
-The above code stores a vector of ten numbers `rand_unifs_10`, shown below.
+The above code stores a vector of ten numbers `rand_unifs_10`, shown below. Note that the numbers will be different each time we re-run the `runif` function above.
 
 ```{r, echo = FALSE}
 print(rand_unifs_10);
@@ -99,18 +99,18 @@ Generating a histogram using data from a simulated distribution like this is oft
 
 <a name="rpois">**Sampling from a poisson distribution**</a>
 
-Many processes in biology can be described by a [Poisson distribution](https://en.wikipedia.org/wiki/Poisson_distribution). A Poisson process describes events happening with some given probability over an area of time or space such that $X\sim Poisson(\lambda)$, where the rate parameter $\lambda$ is both the mean and variance of the Poisson distribution (note that by definition, $\lambda > 0$, and values are always integers, as with count data). Sampling from a Poisson distribution can be done in R with `rpois`, which takes only two arguments specifying the number of values to be returned (`n`) and the rate parameter (`lambda`).
+Many processes in biology can be described by a [Poisson distribution](https://en.wikipedia.org/wiki/Poisson_distribution). A Poisson process describes events happening with some given probability over an area of time or space such that $X\sim Poisson(\lambda)$, where the rate parameter $\lambda$ is both the mean and variance of the Poisson distribution (note that by definition, $\lambda > 0$, and although $\lambda$ can be any positive real number, data are always integers, as with count data). Sampling from a Poisson distribution can be done in R with `rpois`, which takes only two arguments specifying the number of values to be returned (`n`) and the rate parameter (`lambda`).
 
 ```{r}
-rand_poissons <- rpois(n = 10, lambda = 1);
+rand_poissons <- rpois(n = 10, lambda = 1.5);
 print(rand_poissons);
 ```
 
-There are no default values for `rpois`. We can plot a histogram of a large number of values to see the distribution when $\lambda = 4$ below.
+There are no default values for `rpois`. We can plot a histogram of a large number of values to see the distribution when $\lambda = 4.5$ below.
 
 
 ```{r}
-rand_poissons_10000 <- rpois(n = 10000, lambda = 4);
+rand_poissons_10000 <- rpois(n = 10000, lambda = 4.5);
 hist(rand_poissons_10000, xlab = "Random value (X)", col = "grey",
      main = "", cex.lab = 1.5, cex.axis = 1.5);
 ```
@@ -131,7 +131,7 @@ coin_flips_2 <- rbinom(n = 2, size = 1000, prob = 0.5);
 print(coin_flips_2);
 ```
 
-In the above, a fair coin was flipped 1000 times and returned `r coin_flips_2[1]` heads, and then another fair coin was flipped 1000 times and returned `r coin_flips_2[2]` heads. As with the `rnorm` and `runif` functions, we can check to see what the distribution of the binomial function looks like if we repeat this process. Suppose, in other words, that we want to see the distribution of times heads comes up after 1000 flips. We can, for example, simulate the process of flipping 1000 times in a row with 10000 different coins using the code below.
+In the above, a fair coin was flipped 1000 times and returned `r coin_flips_2[1]` heads, and then another fair coin was flipped 1000 times and returned `r coin_flips_2[2]` heads. As with the `rnorm` and `runif` functions, we can check to see what the distribution of the binomial function looks like if we repeat this process. Suppose, in other words, that we want to see the distribution of the number of times heads comes up after 1000 flips. We can, for example, simulate the process of flipping 1000 times in a row with 10000 different coins using the code below.
 
 ```{r}
 coin_flips_10000 <- rbinom(n = 10000, size = 1000, prob = 0.5);
@@ -167,6 +167,7 @@ To start out simple, suppose we want to ask R to pick a random number from one t
 
 ```{r}
 rand_number_1 <- sample(x = 1:10, size = 1);
+print(rand_number_1);
 ```
 
 The above code will set `rand_number_1` to a randomly selected value, in this case `r rand_number_1`. Because we have not specified a probability vector `prob`, the function assumes that every element in `1:10` is sampled with equal probability. We can increase the `size` of the sample to `10` below.
@@ -201,10 +202,10 @@ Sampling characters from a list of elements is no different than sampling number
 species <- c("species_A", "species_B", "species_C");
 ```
 
-This gives three possible categories, which I can now use `sample` to draw from. Assume that I want to simulate the sampling of these three species, perhaps with `species_A` being twice as common as `species_B` and `species_C`. I might use the following code to sample 12 times.
+This gives three possible categories, which I can now use `sample` to draw from. Assume that I want to simulate the sampling of these three species, perhaps with `species_A` being twice as common as `species_B` and `species_C`. I might use the following code to sample 24 times.
 
 ```{r}
-sp_sample <- sample(x = species, size = 12, replace = TRUE, 
+sp_sample <- sample(x = species, size = 24, replace = TRUE, 
                     prob = c(0.5, 0.25, 0.25) 
                     );
 ```
@@ -232,7 +233,7 @@ Mathematically, these variables are generated by first simulating the sample $x_
 
 $x_{2} = \rho x_{1} + \sqrt{1 - \rho^{2}}x_{rand},$
 
-Where $x_{rand}$ is a sample from a normal distribution with the same variance as $x_{1}$. A simple call to the R function `cor` will confirm that the correlation does indeed equal `rho`.
+Where $x_{rand}$ is a sample from a normal distribution with the same variance as $x_{1}$. A simple call to the R function `cor` will confirm that the correlation does indeed equal `rho` (with some sampling error).
 
 ```{r}
 cor(x1, x2);
@@ -325,7 +326,7 @@ And we can check to confirm that the covariance structure of the data is correct
 cov(sim_data);
 ```
 
-Note that the values are not exact, but should become closer to the specified values as increase the sample size `n`. We can visualse the data too; for example, we might look at the close correlation between $M_{1}$ and $M_{2}$ using a scatterplot, just as we would for data sampled from the field.
+Note that the values are not exact, but should become closer to the specified values as increase the sample size `n`. We can visualise the data too; for example, we might look at the close correlation between $M_{1}$ and $M_{2}$ using a scatterplot, just as we would for data sampled from the field.
 
 ```{r}
 par(mar = c(5, 5, 1, 1));
@@ -418,7 +419,7 @@ legend("topleft", pch = 15:17, col = c("black", "red", "blue"),
        legend = c("Species 1", "Species 2", "Species 3"), cex = 1.25);
 ```
 
-This looks like there might be a postive relationship. We can use a generalised linear model to test it with species as a random effect, as we might do if these were data sampled from the field.
+This looks like there might be a positive relationship, but it is very difficult to determine just from the scatterplot. We can use a generalised linear model to test it with species as a random effect, as we might do if these were data sampled from the field (do not worry about the details of the model here; the key point is that we can use the simulated data with known properties to assess the performance of a statistical test).
 
 ```{r}
 library(lme4);
