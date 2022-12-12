@@ -1,50 +1,40 @@
-# Univariate random numbers
-
-rand_unifs_10 <- runif(n = 10, min = 0, max = 1);
+# Random uniform numbers
+rand_unifs_10    <- runif(n = 10, min = 0, max = 1);
 rand_unifs_10000 <- runif(n = 10000, min = 0, max = 1);
 hist(rand_unifs_10000, xlab = "Random value (X)", col = "grey",
      main = "", cex.lab = 1.5, cex.axis = 1.5);
 
-rand_norms_10 <- rnorm(n = 10, mean = 0, sd = 1);
+# Random normal numbers
+rand_norms_10    <- rnorm(n = 10, mean = 0, sd = 1);
 rand_norms_10000 <- rnorm(n = 10000, mean = 0, sd = 1);
 hist(rand_norms_10000, xlab = "Random value (X)", col = "grey",
      main = "", cex.lab = 1.5, cex.axis = 1.5);
 
-rand_poissons <- rpois(n = 10, lambda = 1);
-print(rand_poissons);
+# Random poisson numbers
+rand_poissons       <- rpois(n = 10, lambda = 4);
 rand_poissons_10000 <- rpois(n = 10000, lambda = 4);
 hist(rand_poissons_10000, xlab = "Random value (X)", col = "grey",
      main = "", cex.lab = 1.5, cex.axis = 1.5);
 
+# Random binomials
+rand_binoms1 <- rbinom(n = 1, size = 1000, prob = 0.5);
+print(rand_binoms1);
 
-coin_flips <- rbinom(n = 1, size = 1000, prob = 0.5);
-print(coin_flips);
+rand_binoms2 <- rbinom(n = 2, size = 1000, prob = 0.5);
+print(rand_binoms2);
 
-coin_flips_2 <- rbinom(n = 2, size = 1000, prob = 0.5);
-print(coin_flips_2);
-
-coin_flips_10000 <- rbinom(n = 10000, size = 1000, prob = 0.5);
-hist(coin_flips_10000, xlab = "Random value (X)", col = "grey",
+rand_binomis10000 <- rbinom(n = 10000, size = 1000, prob = 0.5);
+hist(rand_binomis10000, xlab = "Random value (X)", col = "grey",
      main = "", cex.lab = 1.5, cex.axis = 1.5);
 
-flips_10 <- rbinom(n = 10, size = 1, prob = 0.5);
 
 # Random sampling using sample
-
 rand_number_1 <- sample(x = 1:10, size = 1);
-
 rand_number_10 <- sample(x = 1:10, size = 10);
-print(rand_number_10);
-
 rand_number_10_r <- sample(x = 1:10, size = 10, replace = TRUE);
-print(rand_number_10_r);
 
-prob_vec      <- c( rep(x = 0.05, times = 5), rep(x = 0.15, times = 5) );
-rand_num_bias <- sample(x = 1:10, size = 10, replace = TRUE, prob = prob_vec);
-print(rand_num_bias);
-
-species <- c("species_A", "species_B", "species_C");
-
+# Random sampling of strings
+species   <- c("species_A", "species_B", "species_C");
 sp_sample <- sample(x = species, size = 12, replace = TRUE, 
                     prob = c(0.5, 0.25, 0.25) 
                     );
@@ -122,7 +112,16 @@ summary(mod);
 
 
 
-
+N         <- 1200;
+species   <- c("species_A", "species_B");
+sp_sample <- sample(x = species, size = N, replace = TRUE);
+sp_mass   <- rnorm(n = N, mean = 100, sd = 4);
+for(i in 1:N){
+        if(sp_sample[i] == "species_A"){
+                sp_mass[i] <- sp_mass[i] + runif(n = 1, min = 0, max = 4);
+        }
+}
+sim_data  <- data.frame(species, sp_mass);
 
 
 
