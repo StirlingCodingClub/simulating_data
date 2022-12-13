@@ -1,0 +1,311 @@
+---
+title: "Simulating data in R"
+author: "Stirling Coding Club"
+subtitle: stirlingcodingclub.github.io/simulating_data
+date: "14 December 2022"
+output:
+  beamer_presentation:
+    theme: "default"
+    colortheme: "default"
+    fonttheme: "default"
+  ioslides_presentation: default
+  slidy_presentation: default
+header-includes:
+- \usepackage{hyperref}
+colorlinks: true
+linkcolor: blue
+urlcolor: blue
+---
+
+
+## Why simulate data?
+
+Simulating data uses generating random data sets with known properties using code (or some other method). This can be useful in a lot of contexts.
+
+\begin{itemize}
+\item Better understand statistical methods
+\item Plan ahead for actual data collection
+\item Visualise data sets and distributions
+\item Run some statistical analyses (randomisation)
+\end{itemize}
+
+## How can data be simulated in R?
+
+Random data with different properties can be generated in R using several base R functions.
+
+\begin{itemize}
+\item `runif` generates random values from a uniform distribution. \pause
+\item `rnorm` generates random values from a normal distribution. \pause
+\item `rpois` generates random values from a poisson distribution. \pause
+\item `rbinom` generates random values from a binomial distribution. \pause
+\item `sample` samples values from any given vector with or without replacement.
+\end{itemize}
+
+Other R packages, such as the MASS library, can simulate full data sets with pre-defined correlation stuctures.
+
+## The `runif` function in R
+
+```{r}
+rand_unifs <- runif(n = 10000, min = 0, max = 1);
+```
+
+```{r, echo = FALSE}
+library(knitr);
+print(rand_unifs[1:40]);
+```
+
+## The `runif` function in R
+
+```{r}
+rand_unifs <- runif(n = 10000, min = 0, max = 1);
+```
+
+```{r, echo = FALSE}
+hist(rand_unifs, xlab = "Random value (X)", col = "blue",
+     main = "", cex.lab = 1.5, cex.axis = 1.5);
+```
+
+## The `runif` function in R
+
+\small
+
+```
+int verify_seed(int x){
+  x=abs(x) % 30000;
+  return(++x);
+ } /* Easy way of getting seeds */
+
+double as183(int seeds[]){
+  double unidev; /* Code below verifies the 3 seeds */
+  seeds[0] = verify_seed(seeds[0]);
+  seeds[1] = verify_seed(seeds[1]);
+  seeds[2] = verify_seed(seeds[2]);
+  /* Code below gets a decimal to be added to unidev */
+  seeds[0] = (171 * seeds[0]) % 30269;
+  seeds[1] = (172 * seeds[1]) % 30307;
+  seeds[2] = (170 * seeds[2]) % 30323;
+  /* unidev gets a random uniform number between zero and one */
+  unidev = seeds[0]/30269.0 + seeds[1]/30307.0 + seeds[2]/30323.0;
+  /* Return just the decimal, subtract integer of unidev */
+  return(unidev - (int)unidev);
+} /* We now have one random uniform number */
+```
+
+## The `rnorm` function in R
+
+```{r}
+rand_rnorms <- rnorm(n = 10000, mean = 0, sd = 1);
+```
+
+```{r, echo = FALSE}
+print(rand_rnorms[1:40]);
+```
+
+## The `rnorm` function in R
+
+```{r}
+rand_rnorms <- rnorm(n = 10000, mean = 0, sd = 1);
+```
+
+```{r, echo = FALSE}
+hist(rand_rnorms, xlab = "Random value (X)", col = "blue",
+     main = "", cex.lab = 1.5, cex.axis = 1.5);
+```
+
+## The `rpois` function in R
+
+```{r}
+rand_rpois <- rpois(n = 10000, lambda = 4);
+```
+
+```{r, echo = FALSE}
+print(rand_rpois[1:40]);
+```
+
+## The `rpois` function in R
+
+```{r}
+rand_rpois <- rpois(n = 10000, lambda = 4);
+```
+
+```{r, echo = FALSE}
+hist(rand_rpois, xlab = "Random value (X)", col = "blue",
+     main = "", cex.lab = 1.5, cex.axis = 1.5);
+```
+
+## The `rbinom` function in R
+
+```{r}
+rand_rbinom <- rbinom(n = 100, size = 1, prob = 0.5);
+```
+
+```{r, echo = FALSE}
+print(rand_rbinom[1:40]);
+```
+
+## The `rpois` function in R
+
+```{r}
+rand_rbinom <- rbinom(n = 100, size = 1, prob = 0.5);
+```
+
+```{r, echo = FALSE}
+hist(rand_rbinom, xlab = "Random value (X)", 
+     col = "blue",
+     main = "", cex.lab = 1.5, 
+     cex.axis = 1.5);
+```
+
+
+## Using `sample` in R
+
+Create a vector of numbers from which to sample.
+
+```{r}
+my_sample_vec <- 1:10;
+```
+
+```{r, echo = FALSE}
+print(my_sample_vec);
+```
+\pause
+Use `sample` to randomly sample numbers from `my_sample_vec`
+
+```{r}
+my_sample <- sample(x = my_sample_vec, size = 4);
+```
+
+```{r, echo = FALSE}
+print(my_sample);
+```
+
+
+## Using `sample` in R
+
+Can sample with or without replacement.
+
+```{r}
+sample_no_replace <- sample(x = my_sample_vec, 
+                            size = 10, replace = FALSE);
+```
+
+```{r, echo = FALSE}
+print(sample_no_replace);
+```
+\pause
+```{r}
+sample_replace <- sample(x = my_sample_vec, 
+                         size = 10, replace = TRUE);
+```
+
+```{r, echo = FALSE}
+print(sample_replace);
+```
+
+## Using `sample` in R
+
+Can also change the probabilities of being sampled
+
+```{r}
+# Vector values must sum to 1
+pr_vector  <- c(0, 0, 0, 0, 0, 
+                0.2, 0.2, 0.2, 
+                0.2, 0.2);
+new_sample <- sample(x = 1:10, size = 10, 
+                     replace = TRUE, 
+                     prob = pr_vector);
+```
+
+```{r, echo = FALSE}
+print(new_sample);
+```
+
+## Using `sample` in R
+
+Can also sample strings instead of numbers
+
+```{r}
+species   <- c("species_A", "species_B", "species_C");
+sp_sample <- sample(x = species, size = 12, 
+                    replace = TRUE, 
+                    prob = c(0.5, 0.25, 0.25) 
+                    );
+```
+
+```{r, echo = FALSE}
+print(sp_sample);
+```
+
+
+## Building a simple simulated dataset
+
+\small
+
+```{r}
+N         <- 12;
+species   <- c("species_A", "species_B");
+sp_sample <- sample(x = species, 
+                    size = N, replace = TRUE);
+sp_mass   <- rnorm(n = N, mean = 100, sd = 4);
+for(i in 1:N){
+  if(sp_sample[i] == "species_A"){
+    sp_mass[i] <- sp_mass[i] + rnorm(n = 1, 
+                                     mean = 4, sd = 1);
+  }
+}
+sim_data  <- data.frame(sp_sample, sp_mass);
+```
+
+## Building a simple simulated dataset
+
+```{r, echo = FALSE}
+kable(sim_data);
+```
+
+## Building a simple simulated dataset
+
+```{r}
+t.test(sp_mass ~ sp_sample, data = sim_data);
+```
+
+
+## Building a simple simulated dataset
+
+\small
+
+```{r}
+N         <- 120;
+species   <- c("species_A", "species_B");
+sp_sample <- sample(x = species, size = N, 
+                    replace = TRUE);
+sp_mass   <- rnorm(n = N, mean = 100, sd = 4);
+for(i in 1:N){
+  if(sp_sample[i] == "species_A"){
+    sp_mass[i] <- sp_mass[i] + rnorm(n = 1, 
+                                     mean = 4, sd = 1);
+  }
+}
+sim_data  <- data.frame(sp_sample, sp_mass);
+```
+
+## Building a simple simulated dataset
+
+```{r}
+t.test(sp_mass ~ sp_sample, data = sim_data);
+```
+
+## Setting a seed gives the same numbers
+
+Try it once
+
+```{r}
+set.seed(10);
+rnorm(n = 10);
+```
+
+Try it again
+
+```{r}
+set.seed(10);
+rnorm(n = 10);
+```
