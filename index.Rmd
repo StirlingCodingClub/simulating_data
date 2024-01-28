@@ -1,11 +1,11 @@
 ---
 title: "Creating simulated data sets in R"
 author: "Brad Duthie"
-date: "14 December 2022"
+date: "31 January 2024"
 output:
-  pdf_document: default
   html_document:
     code_folding: show
+  pdf_document: default
   word_document: default
 bibliography: refs.bib
 ---
