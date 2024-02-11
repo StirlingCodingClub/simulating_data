@@ -250,7 +250,7 @@ sp_mass   <- rnorm(n = N, mean = 100, sd = 4);
 for(i in 1:N){
   if(sp_sample[i] == "species_A"){
     sp_mass[i] <- sp_mass[i] + rnorm(n = 1, 
-                                     mean = 4, sd = 1);
+                                     mean = 2, sd = 1);
   }
 }
 sim_data  <- data.frame(sp_sample, sp_mass);
@@ -282,7 +282,7 @@ sp_mass   <- rnorm(n = N, mean = 100, sd = 4);
 for(i in 1:N){
   if(sp_sample[i] == "species_A"){
     sp_mass[i] <- sp_mass[i] + rnorm(n = 1, 
-                                     mean = 4, sd = 1);
+                                     mean = 2, sd = 1);
   }
 }
 sim_data  <- data.frame(sp_sample, sp_mass);
